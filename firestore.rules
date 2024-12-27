@@ -1,0 +1,15 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read and write access to the 'invites' collection
+    match /invites/{inviteId} {
+      allow read, write: if true;
+    }
+
+    // Deny all access to other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
