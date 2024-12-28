@@ -4,10 +4,13 @@ import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
-    <h1>You're Invited to Eliana's Butterfly Birthday Party!</h1>
-    <p id="message"></p>
-    <button id="confirm">I Will Flutter By!</button>
-    <button id="deny">I Can't Make It</button>
+    <div id="image-container"></div>
+    <div id="content">
+      <h2>You're Invited to Eliana's Ladybug Birthday Party!</h2>
+      <p id="message"></p>
+      <button id="confirm">Count Me In!</button>
+      <button id="deny">Sorry, Can't Make It</button>
+    </div>
   </div>
 `
 
