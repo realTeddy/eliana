@@ -6,7 +6,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
     <div id="image-container"></div>
     <div id="content">
-      <h2>You're Invited to Eliana's Ladybug Birthday Party!</h2>
+      <h2>You're Invited to Eliana's 4th Ladybug Birthday Party!</h2>
       <p class="details" id="message"></p>
       <p class="details">
         Sat Jan 11th, 2PM - 4PM <br>
