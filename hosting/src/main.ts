@@ -93,7 +93,7 @@ async function updateAttendance(
   try {
     await setDoc(inviteRef, { status }, { merge: true });
     if (status === "confirmed") {
-      messageElement.innerText = `Thank you for RSVPing, ${name}! Eliana will be so happy to see you at her butterfly party! 🦋`;
+      messageElement.innerText = `Thank you for RSVPing, ${name}! Eliana will be so happy to see you at her ladybug party! 🐞`;
     } else if (status === "denied") {
       messageElement.innerText = `We're sorry you can't make it, ${name}. We'll miss you at Eliana's special day. 🌸`;
     }
