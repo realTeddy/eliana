@@ -7,7 +7,12 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div id="image-container"></div>
     <div id="content">
       <h2>You're Invited to Eliana's Ladybug Birthday Party!</h2>
-      <p id="message"></p>
+      <p class="details" id="message"></p>
+      <p class="details">
+        Sat Jan 11th, 2PM - 4PM <br>
+        10012 Paxton Run Road <br>
+        Charlotte NC, 28277
+      </p>
       <button id="confirm">Count Me In!</button>
       <button id="deny">Sorry, Can't Make It</button>
     </div>
@@ -60,7 +65,7 @@ async function checkInvite() {
     if (inviteData?.status) {
       messageElement.innerText = `Hi ${name}, your current status: ${inviteData.status.toUpperCase()}.\nYou can update your response below.`;
     } else {
-      messageElement.innerText = `Hi ${name}, please confirm or deny your attendance at Eliana's Butterfly Party!`;
+      messageElement.innerText = `Hi ${name}, let us know if you can make it to Eliana's ladybug party! We'd love to see you there!`;
     }
 
     setupEventListeners(inviteRef, name);
