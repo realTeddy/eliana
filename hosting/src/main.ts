@@ -22,6 +22,11 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         16041 Johnston Rd Suite E <br>
         Charlotte, NC 28277
       </p>
+      <p class="details sibling-note">👨‍👩‍👧‍👦 Siblings are welcome! Let us know how many kiddos are coming.</p>
+      <div id="kids-input-container">
+        <label for="kids-input" class="input-label">Number of Kids Attending</label>
+        <input type="number" id="kids-input" min="1" max="10" value="1" />
+      </div>
       <div id="name-input-container" style="display: none;">
         <label for="name-input" class="input-label">Your Name</label>
         <input type="text" id="name-input" placeholder="Enter your name" />
@@ -58,15 +63,13 @@ const confirmButton = document.getElementById("confirm")!;
 const denyButton = document.getElementById("deny")!;
 const nameInputContainer = document.getElementById("name-input-container")!;
 const nameInput = document.getElementById("name-input") as HTMLInputElement;
-
-// Track if this is a walk-in guest (no invite ID)
-let isWalkIn = false;
-let currentInviteRef: ReturnType<typeof doc> | null = null;
+const kidsInputContainer = document.getElementById("kids-input-container")!;
+const kidsInput = document.getElementById("kids-input") as HTMLInputElement;
+const siblingNote = document.querySelector(".sibling-note") as HTMLElement;
 
 async function checkInvite() {
 if (!inviteId) {
     // No invite ID - show name input for walk-in guests
-    isWalkIn = true;
     nameInputContainer.style.display = "block";
     messageElement.innerText = "Autobots, assemble! 🤖⚡ Eliana is turning 5 and YOU'RE invited to the party! Ready to roll out?";
     setupWalkInListeners();
@@ -75,12 +78,10 @@ if (!inviteId) {
 
   try {
     const inviteRef = doc(db, "invites", inviteId);
-    currentInviteRef = inviteRef;
     const inviteSnapshot = await getDoc(inviteRef);
 
 if (!inviteSnapshot.exists()) {
       // Invalid invite ID - treat as walk-in
-      isWalkIn = true;
       nameInputContainer.style.display = "block";
       messageElement.innerText = "Autobots, assemble! 🤖⚡ Eliana is turning 5 and YOU'RE invited to the party! Ready to roll out?";
       setupWalkInListeners();
@@ -89,6 +90,10 @@ if (!inviteSnapshot.exists()) {
 
     const inviteData = inviteSnapshot.data();
     const name = inviteData?.name || "Guest";
+
+    // Hide inputs for returning users
+    siblingNote.style.display = "none";
+    kidsInputContainer.style.display = "none";
 
     if (inviteData?.status) {
       const statusText = inviteData.status === 'confirmed' ? "You're on the team! 🎉🤖" : "Sorry we'll miss you! Hope to see you next time! 💙";
@@ -129,34 +134,19 @@ function setupWalkInListeners() {
 async function createWalkInRsvp(name: string, status: "confirmed" | "denied") {
   try {
     const invitesCollection = collection(db, "invites");
+    const kidsCount = parseInt(kidsInput.value, 10) || 1;
     const newDoc = await addDoc(invitesCollection, { 
       name, 
       status,
       walkIn: true,
+      kidsCount,
       createdAt: new Date().toISOString()
     });
     
-    currentInviteRef = doc(db, "invites", newDoc.id);
-    isWalkIn = false;
-    nameInputContainer.style.display = "none";
-    
-    if (status === "confirmed") {
-      messageElement.innerText = `YAYYY ${name}! 🎉🤖 You're on the team! Eliana can't wait to party with you! Autobots, roll out!`;
-    } else {
-      messageElement.innerText = `Aww ${name}, we'll miss you! 😢 If things change, you know where to find us! 💙`;
-    }
-    
-    // Update buttons and switch to regular update mode
-    confirmButton.innerText = "⚡ Actually, I'm In!";
-    denyButton.innerText = "Change My Mind";
-    
-    // Remove old listeners and add new ones for updating
-    const newConfirmBtn = confirmButton.cloneNode(true) as HTMLButtonElement;
-    const newDenyBtn = denyButton.cloneNode(true) as HTMLButtonElement;
-    confirmButton.parentNode!.replaceChild(newConfirmBtn, confirmButton);
-    denyButton.parentNode!.replaceChild(newDenyBtn, denyButton);
-    
-    setupEventListeners(currentInviteRef, name);
+    // Redirect to the same page with the new doc ID so refresh works
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set("id", newDoc.id);
+    window.location.href = newUrl.toString();
   } catch (error) {
     console.error("Error creating RSVP:", error);
     messageElement.innerText = "Error saving your response. Please try again.";
